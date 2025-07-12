@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5k Savings Group</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>5k Savings Group</h1>
+    <textarea id="nameInput" placeholder="Enter names, one per line..."></textarea>
+    <button onclick="generateWheel()">Generate Spin Wheel</button>
+    <div class="wheel-container">
+      <canvas id="wheelCanvas" width="300" height="300"></canvas>
+      <div class="pointer">🔽</div>
+    </div>
+    <button onclick="spinWheel()">🎡 Spin</button>
+    <h2 id="result"></h2>
+
+    <audio id="spinSound" src="assets/spin.mp3" preload="auto"></audio>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

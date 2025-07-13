@@ -26,6 +26,7 @@
       margin-bottom: 20px;
       letter-spacing: 3px;
       text-shadow: 0 0 10px #2ecc71;
+      text-align: center;
     }
 
     #namesInput {
@@ -113,14 +114,78 @@
       }
     }
 
+    /* Member table styles */
+    .member-table-container {
+      margin-top: 40px;
+      width: 100%;
+      max-width: 600px;
+      overflow-x: auto;
+    }
+
+    .member-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .member-table th, .member-table td {
+      padding: 12px;
+      text-align: center;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .member-table th {
+      background-color: #145214;
+      font-size: 1.1rem;
+    }
+
+    .name-input {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      outline: none;
+      font-size: 1rem;
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #e6ffe6;
+    }
+
+    .status-toggle {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background-color: #c0392b;
+      color: white;
+      transition: background-color 0.3s ease;
+    }
+
+    .status-toggle.received {
+      background-color: #2ecc71;
+    }
+
     @media (max-width: 480px) {
       #namesInput {
         width: 90vw;
         height: 150px;
       }
+
       #popupContent {
         font-size: 2rem;
         padding: 30px 40px;
+      }
+
+      .name-input {
+        font-size: 0.9rem;
+      }
+
+      .status-toggle {
+        font-size: 0.85rem;
+        padding: 6px 12px;
       }
     }
   </style>
@@ -137,11 +202,27 @@
   <div id="popupContent"></div>
 </div>
 
+<!-- Member List Table -->
+<div class="member-table-container">
+  <table class="member-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="memberRows">
+      <!-- Populated via JS -->
+    </tbody>
+  </table>
+</div>
+
 <script>
   const pickBtn = document.getElementById('pickBtn');
   const namesInput = document.getElementById('namesInput');
   const popup = document.getElementById('popup');
   const popupContent = document.getElementById('popupContent');
+  const memberRows = document.getElementById('memberRows');
 
   function getNames() {
     return namesInput.value
@@ -203,6 +284,41 @@
       hidePopup();
     }
   });
+
+  // Populate 10 editable member rows with status toggles
+  for (let i = 0; i < 10; i++) {
+    const tr = document.createElement('tr');
+
+    const nameTd = document.createElement('td');
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.placeholder = 'Enter name';
+    nameInput.classList.add('name-input');
+    nameTd.appendChild(nameInput);
+    tr.appendChild(nameTd);
+
+    const statusTd = document.createElement('td');
+    const toggleBtn = document.createElement('button');
+    toggleBtn.classList.add('status-toggle');
+    toggleBtn.textContent = 'Pending';
+    toggleBtn.dataset.state = 'pending';
+
+    toggleBtn.addEventListener('click', () => {
+      if (toggleBtn.dataset.state === 'pending') {
+        toggleBtn.dataset.state = 'received';
+        toggleBtn.textContent = 'Received';
+        toggleBtn.classList.add('received');
+      } else {
+        toggleBtn.dataset.state = 'pending';
+        toggleBtn.textContent = 'Pending';
+        toggleBtn.classList.remove('received');
+      }
+    });
+
+    statusTd.appendChild(toggleBtn);
+    tr.appendChild(statusTd);
+    memberRows.appendChild(tr);
+  }
 </script>
 
 </body>

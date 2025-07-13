@@ -194,17 +194,7 @@
 
 <h1>5K Savings Group</h1>
 
-<textarea id="namesInput" placeholder="Enter 1 or more names, each on a new line...">bala
-mani G
-chinamaruthu
-Manikandan
-gokul
-bala Jd
-mani/maruthu
-Pragatheeshwaran
-gokul/praga
-karthiyaraj M
-</textarea>
+<textarea id="namesInput" placeholder="Enter 1 or more names, each on a new line..."></textarea>
 
 <button id="pickBtn">Pick a Random Name</button>
 
@@ -233,6 +223,20 @@ karthiyaraj M
   const popup = document.getElementById('popup');
   const popupContent = document.getElementById('popupContent');
   const memberRows = document.getElementById('memberRows');
+
+  // The 10 fixed names for the table (independent of textarea)
+  const fixedNames = [
+    'bala',
+    'mani G',
+    'chinamaruthu',
+    'Manikandan',
+    'gokul',
+    'bala Jd',
+    'mani/maruthu',
+    'Pragatheeshwaran',
+    'gokul/praga',
+    'karthiyaraj M'
+  ];
 
   function getNames() {
     return namesInput.value
@@ -276,7 +280,7 @@ karthiyaraj M
   pickBtn.addEventListener('click', async () => {
     const names = getNames();
     if (names.length === 0) {
-      alert('Please enter at least one name.');
+      alert('Please enter at least one name in the box above.');
       return;
     }
 
@@ -295,10 +299,9 @@ karthiyaraj M
     }
   });
 
-  // Prefill table with names and create toggle buttons
+  // Populate the fixed 10-name table independently of textarea
   function populateTable() {
     memberRows.innerHTML = ''; // clear previous rows
-    const names = getNames();
 
     for(let i = 0; i < 10; i++) {
       const tr = document.createElement('tr');
@@ -308,11 +311,7 @@ karthiyaraj M
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.classList.add('name-input');
-      nameInput.value = names[i] || '';
-      nameInput.addEventListener('input', () => {
-        // Update textarea when table names change
-        updateTextareaFromTable();
-      });
+      nameInput.value = fixedNames[i];
       nameTd.appendChild(nameInput);
       tr.appendChild(nameTd);
 
@@ -340,24 +339,6 @@ karthiyaraj M
       memberRows.appendChild(tr);
     }
   }
-
-  // Update textarea to reflect names edited in the table
-  function updateTextareaFromTable() {
-    const rows = memberRows.querySelectorAll('tr');
-    const names = [];
-    rows.forEach(row => {
-      const input = row.querySelector('input.name-input');
-      if(input) {
-        names.push(input.value.trim());
-      }
-    });
-    namesInput.value = names.join('\n');
-  }
-
-  // When textarea changes, update table names
-  namesInput.addEventListener('input', () => {
-    populateTable();
-  });
 
   // Initial populate on page load
   populateTable();

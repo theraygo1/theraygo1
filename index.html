@@ -194,7 +194,17 @@
 
 <h1>5K Savings Group</h1>
 
-<textarea id="namesInput" placeholder="Enter 1 or more names, each on a new line..."></textarea>
+<textarea id="namesInput" placeholder="Enter 1 or more names, each on a new line...">bala
+mani G
+chinamaruthu
+Manikandan
+gokul
+bala Jd
+mani/maruthu
+Pragatheeshwaran
+gokul/praga
+karthiyaraj M
+</textarea>
 
 <button id="pickBtn">Pick a Random Name</button>
 
@@ -212,7 +222,7 @@
       </tr>
     </thead>
     <tbody id="memberRows">
-      <!-- Populated via JS -->
+      <!-- Rows will be inserted here -->
     </tbody>
   </table>
 </div>
@@ -285,40 +295,72 @@
     }
   });
 
-  // Populate 10 editable member rows with status toggles
-  for (let i = 0; i < 10; i++) {
-    const tr = document.createElement('tr');
+  // Prefill table with names and create toggle buttons
+  function populateTable() {
+    memberRows.innerHTML = ''; // clear previous rows
+    const names = getNames();
 
-    const nameTd = document.createElement('td');
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.placeholder = 'Enter name';
-    nameInput.classList.add('name-input');
-    nameTd.appendChild(nameInput);
-    tr.appendChild(nameTd);
+    for(let i = 0; i < 10; i++) {
+      const tr = document.createElement('tr');
 
-    const statusTd = document.createElement('td');
-    const toggleBtn = document.createElement('button');
-    toggleBtn.classList.add('status-toggle');
-    toggleBtn.textContent = 'Pending';
-    toggleBtn.dataset.state = 'pending';
+      // Name cell with input
+      const nameTd = document.createElement('td');
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.classList.add('name-input');
+      nameInput.value = names[i] || '';
+      nameInput.addEventListener('input', () => {
+        // Update textarea when table names change
+        updateTextareaFromTable();
+      });
+      nameTd.appendChild(nameInput);
+      tr.appendChild(nameTd);
 
-    toggleBtn.addEventListener('click', () => {
-      if (toggleBtn.dataset.state === 'pending') {
-        toggleBtn.dataset.state = 'received';
-        toggleBtn.textContent = 'Received';
-        toggleBtn.classList.add('received');
-      } else {
-        toggleBtn.dataset.state = 'pending';
-        toggleBtn.textContent = 'Pending';
-        toggleBtn.classList.remove('received');
+      // Status cell with toggle button
+      const statusTd = document.createElement('td');
+      const toggleBtn = document.createElement('button');
+      toggleBtn.classList.add('status-toggle');
+      toggleBtn.textContent = 'Pending';
+      toggleBtn.dataset.state = 'pending';
+
+      toggleBtn.addEventListener('click', () => {
+        if(toggleBtn.dataset.state === 'pending') {
+          toggleBtn.dataset.state = 'received';
+          toggleBtn.textContent = 'Received';
+          toggleBtn.classList.add('received');
+        } else {
+          toggleBtn.dataset.state = 'pending';
+          toggleBtn.textContent = 'Pending';
+          toggleBtn.classList.remove('received');
+        }
+      });
+      statusTd.appendChild(toggleBtn);
+      tr.appendChild(statusTd);
+
+      memberRows.appendChild(tr);
+    }
+  }
+
+  // Update textarea to reflect names edited in the table
+  function updateTextareaFromTable() {
+    const rows = memberRows.querySelectorAll('tr');
+    const names = [];
+    rows.forEach(row => {
+      const input = row.querySelector('input.name-input');
+      if(input) {
+        names.push(input.value.trim());
       }
     });
-
-    statusTd.appendChild(toggleBtn);
-    tr.appendChild(statusTd);
-    memberRows.appendChild(tr);
+    namesInput.value = names.join('\n');
   }
+
+  // When textarea changes, update table names
+  namesInput.addEventListener('input', () => {
+    populateTable();
+  });
+
+  // Initial populate on page load
+  populateTable();
 </script>
 
 </body>

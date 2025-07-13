@@ -162,6 +162,7 @@
       background-color: #c0392b;
       color: white;
       transition: background-color 0.3s ease;
+      user-select: none;
     }
 
     .status-toggle.received {
@@ -204,7 +205,7 @@
 
 <!-- Member List Table -->
 <div class="member-table-container">
-  <table class="member-table">
+  <table class="member-table" aria-label="Member list with name and status">
     <thead>
       <tr>
         <th>Name</th>
@@ -212,7 +213,7 @@
       </tr>
     </thead>
     <tbody id="memberRows">
-      <!-- Rows will be inserted here -->
+      <!-- Rows inserted by JS -->
     </tbody>
   </table>
 </div>
@@ -224,7 +225,7 @@
   const popupContent = document.getElementById('popupContent');
   const memberRows = document.getElementById('memberRows');
 
-  // The 10 fixed names for the table (independent of textarea)
+  // Fixed 10 names for the table (independent from textarea)
   const fixedNames = [
     'bala',
     'mani G',
@@ -236,6 +237,20 @@
     'Pragatheeshwaran',
     'gokul/praga',
     'karthiyaraj M'
+  ];
+
+  // Set initial status for each person ('pending' or 'received')
+  const initialStatuses = [
+    'pending',
+    'received',
+    'pending',
+    'pending',
+    'received',
+    'pending',
+    'pending',
+    'received',
+    'pending',
+    'pending'
   ];
 
   function getNames() {
@@ -299,14 +314,14 @@
     }
   });
 
-  // Populate the fixed 10-name table independently of textarea
+  // Populate table with fixed names and initial statuses
   function populateTable() {
     memberRows.innerHTML = ''; // clear previous rows
 
     for(let i = 0; i < 10; i++) {
       const tr = document.createElement('tr');
 
-      // Name cell with input
+      // Name cell with editable input
       const nameTd = document.createElement('td');
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
@@ -319,8 +334,16 @@
       const statusTd = document.createElement('td');
       const toggleBtn = document.createElement('button');
       toggleBtn.classList.add('status-toggle');
-      toggleBtn.textContent = 'Pending';
-      toggleBtn.dataset.state = 'pending';
+
+      const status = initialStatuses[i] || 'pending';
+      toggleBtn.dataset.state = status;
+
+      if (status === 'received') {
+        toggleBtn.textContent = 'Received';
+        toggleBtn.classList.add('received');
+      } else {
+        toggleBtn.textContent = 'Pending';
+      }
 
       toggleBtn.addEventListener('click', () => {
         if(toggleBtn.dataset.state === 'pending') {
@@ -333,6 +356,7 @@
           toggleBtn.classList.remove('received');
         }
       });
+
       statusTd.appendChild(toggleBtn);
       tr.appendChild(statusTd);
 
@@ -340,7 +364,7 @@
     }
   }
 
-  // Initial populate on page load
+  // Initial load
   populateTable();
 </script>
 

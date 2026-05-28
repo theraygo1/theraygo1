@@ -109,3 +109,329 @@
     }
 
     #pickBtn:active {
+      transform: translateY(1px);
+    }
+
+    #pickBtn:disabled {
+      background: #2c3e50;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    #popup {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(6, 20, 11, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    #popup.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    #popupContent {
+      background: linear-gradient(135deg, #1e5631 0%, #27ae60 100%);
+      padding: 40px 50px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(46, 204, 113, 0.3);
+      font-size: 3rem;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+      animation: popupBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      letter-spacing: 1px;
+      user-select: none;
+      max-width: 85vw;
+      word-wrap: break-word;
+    }
+
+    @keyframes popupBounce {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .member-table-container {
+      margin-top: 35px;
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+    }
+
+    .member-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .member-table th, .member-table td {
+      padding: 16px;
+      text-align: left;
+      color: #fff;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .member-table th {
+      background-color: rgba(0, 0, 0, 0.3);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #a5f3a5;
+    }
+
+    .member-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .member-table tr:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .name-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      outline: none;
+      font-size: 1rem;
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    .name-input:focus {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(46, 204, 113, 0.4);
+    }
+
+    .status-toggle {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background-color: var(--danger-red);
+      color: white;
+      transition: all 0.2s ease;
+      user-select: none;
+      display: inline-block;
+      width: 100px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
+    }
+
+    .status-toggle:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .status-toggle.received {
+      background-color: var(--accent-green);
+      box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 20px 15px; }
+      h1 { font-size: 2.1rem; }
+      #popupContent { font-size: 2rem; padding: 30px 25px; }
+      .member-table th, .member-table td { padding: 12px 10px; }
+      .status-toggle { width: 85px; padding: 6px 10px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>5K Savings Group</h1>
+  <div class="counter-banner" id="counterText">0 / 12 seats completed successfully</div>
+
+  <textarea id="namesInput" placeholder="Enter 1 or more names, each on a new line..."></textarea>
+  <button id="pickBtn">Pick a Random Name</button>
+
+  <div id="popup">
+    <div id="popupContent"></div>
+  </div>
+
+  <div class="member-table-container">
+    <table class="member-table" aria-label="Member list with name and status">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th style="width: 120px; text-align: center;">Status</th>
+        </tr>
+      </thead>
+      <tbody id="memberRows">
+        </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const pickBtn = document.getElementById('pickBtn');
+  const namesInput = document.getElementById('namesInput');
+  const popup = document.getElementById('popup');
+  const popupContent = document.getElementById('popupContent');
+  const memberRows = document.getElementById('memberRows');
+  const counterText = document.getElementById('counterText');
+
+  // Unified Group Settings: Easily add/remove names or switch 'pending' / 'received' directly here!
+  const members = [
+    { name: 'Bala', status: 'pending' },
+    { name: 'Manikandan', status: 'pending' },
+    { name: 'Chinamaruthu', status: 'pending' },
+    { name: 'Mathi', status: 'pending' },
+    { name: 'Vinothkumar', status: 'pending' },
+    { name: 'Gokul', status: 'pending' },
+    { name: 'Bala murugan', status: 'pending' },
+    { name: 'Maruthu /Bala murugan', status: 'pending' },
+    { name: 'Pragatheeshwaran', status: 'pending' },
+    { name: 'Mahesh', status: 'pending' },
+    { name: 'Govindhan', status: 'pending' },
+    { name: 'Karthiyaraj M', status: 'pending' }
+  ];
+
+  // Auto-populate names list directly into random picker input area on load
+  namesInput.value = members.map(m => m.name).join('\n');
+
+  function getNames() {
+    return namesInput.value
+      .split('\n')
+      .map(n => n.trim())
+      .filter(n => n.length > 0);
+  }
+
+  function showPopup(name) {
+    popupContent.textContent = name;
+    popup.classList.add('show');
+  }
+
+  function hidePopup() {
+    popup.classList.remove('show');
+  }
+
+  function getRandomName(names) {
+    const randomIndex = Math.floor(Math.random() * names.length);
+    return names[randomIndex];
+  }
+
+  async function animatePick(names, finalName) {
+    return new Promise(resolve => {
+      let count = 0;
+      const totalCycles = 25;
+      const interval = 60;
+
+      const intervalId = setInterval(() => {
+        const fakeName = names[Math.floor(Math.random() * names.length)];
+        popupContent.textContent = fakeName;
+        count++;
+        if (count > totalCycles) {
+          clearInterval(intervalId);
+          resolve(finalName);
+        }
+      }, interval);
+    });
+  }
+
+  pickBtn.addEventListener('click', async () => {
+    const names = getNames();
+    if (names.length === 0) {
+      alert('Please enter at least one name in the box.');
+      return;
+    }
+
+    pickBtn.disabled = true;
+    showPopup('Picking...');
+    const finalName = getRandomName(names);
+    const result = await animatePick(names, finalName);
+    
+    popupContent.textContent = result;
+    pickBtn.disabled = false;
+  });
+
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup || e.target === popupContent) {
+      hidePopup();
+    }
+  });
+
+  // Calculate and update the seats counter dynamically
+  function updateCounter() {
+    const total = members.length;
+    const completed = document.querySelectorAll('.status-toggle.received').length;
+    counterText.textContent = `${completed} / ${total} seats completed successfully`;
+  }
+
+  // Populate Dashboard Table View
+  function populateTable() {
+    memberRows.innerHTML = ''; 
+
+    members.forEach((member) => {
+      const tr = document.createElement('tr');
+
+      // Name display cell
+      const nameTd = document.createElement('td');
+      const nameInputField = document.createElement('input');
+      nameInputField.type = 'text';
+      nameInputField.classList.add('name-input');
+      nameInputField.value = member.name;
+      nameTd.appendChild(nameInputField);
+      tr.appendChild(nameTd);
+
+      // Interactive Action Toggles
+      const statusTd = document.createElement('td');
+      statusTd.style.textAlign = 'center';
+      const toggleBtn = document.createElement('button');
+      toggleBtn.classList.add('status-toggle');
+
+      // Set baseline state from script config array
+      toggleBtn.dataset.state = member.status;
+
+      if (member.status === 'received') {
+        toggleBtn.textContent = 'Received';
+        toggleBtn.classList.add('received');
+      } else {
+        toggleBtn.textContent = 'Pending';
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        if(toggleBtn.dataset.state === 'pending') {
+          toggleBtn.dataset.state = 'received';
+          toggleBtn.textContent = 'Received';
+          toggleBtn.classList.add('received');
+        } else {
+          toggleBtn.dataset.state = 'pending';
+          toggleBtn.textContent = 'Pending';
+          toggleBtn.classList.remove('received');
+        }
+        updateCounter();
+      });
+
+      statusTd.appendChild(toggleBtn);
+      tr.appendChild(statusTd);
+      memberRows.appendChild(tr);
+    });
+    
+    updateCounter();
+  }
+
+  // Initial Execution
+  populateTable();
+</script>
+
+</body>
+</html>

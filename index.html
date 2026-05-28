@@ -5,77 +5,132 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>5K Savings Group</title>
   <style>
+    :root {
+      --primary-bg: linear-gradient(135deg, #0f301b 0%, #1a4a2b 50%, #276e3d 100%);
+      --glass-bg: rgba(255, 255, 255, 0.07);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --accent-green: #2ecc71;
+      --accent-glow: #27ae60;
+      --danger-red: #e74c3c;
+    }
+
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1e5631;
-      background-image:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 1px, transparent 2px),
-        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 1px, transparent 2px);
-      background-size: 50px 50px;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--primary-bg);
+      background-attachment: fixed;
       color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 40px 20px;
       min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      letter-spacing: 3px;
-      text-shadow: 0 0 10px #2ecc71;
+      font-size: 2.8rem;
+      margin-bottom: 5px;
+      letter-spacing: 2px;
+      text-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);
       text-align: center;
+      font-weight: 700;
+      background: linear-gradient(to right, #ffffff, #a5f3a5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .counter-banner {
+      color: #a5f3a5;
+      margin-top: 5px;
+      margin-bottom: 25px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.2rem;
+      letter-spacing: 0.5px;
+      background: rgba(46, 204, 113, 0.15);
+      padding: 6px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(46, 204, 113, 0.3);
+      backdrop-filter: blur(5px);
     }
 
     #namesInput {
-      width: 300px;
+      width: 100%;
       height: 120px;
       font-size: 1rem;
-      border-radius: 10px;
-      border: none;
-      padding: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--glass-border);
+      padding: 15px;
       resize: none;
-      box-shadow: 0 0 10px #27ae60;
-      background: rgba(255,255,255,0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      background: var(--glass-bg);
       color: #e6ffe6;
       outline: none;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    #namesInput:focus {
+      border-color: var(--accent-green);
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
     }
 
     #pickBtn {
       margin-top: 20px;
-      padding: 15px 30px;
-      font-size: 1.3rem;
+      width: 100%;
+      padding: 16px 30px;
+      font-size: 1.25rem;
+      font-weight: 600;
       border: none;
-      border-radius: 30px;
-      background: #27ae60;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
       color: white;
       cursor: pointer;
-      box-shadow: 0 5px 15px rgba(39, 174, 96, 0.6);
-      transition: background 0.3s ease;
+      box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+      transition: all 0.3s transform, opacity, background-color ease;
+      letter-spacing: 0.5px;
     }
 
     #pickBtn:hover {
-      background: #2ecc71;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(46, 204, 113, 0.6);
+      filter: brightness(1.1);
+    }
+
+    #pickBtn:active {
+      transform: translateY(1px);
     }
 
     #pickBtn:disabled {
-      background: #145214;
+      background: #2c3e50;
+      box-shadow: none;
       cursor: not-allowed;
+      opacity: 0.6;
     }
 
     #popup {
       position: fixed;
-      top:0; left:0; right:0; bottom:0;
-      background: rgba(0,0,0,0.75);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(6, 20, 11, 0.85);
       display: flex;
       justify-content: center;
       align-items: center;
       visibility: hidden;
       opacity: 0;
-      transition: opacity 0.4s ease;
-      z-index: 10;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index: 100;
+      backdrop-filter: blur(10px);
     }
 
     #popup.show {
@@ -84,140 +139,146 @@
     }
 
     #popupContent {
-      background: #27ae60;
-      padding: 40px 60px;
-      border-radius: 25px;
-      box-shadow: 0 0 30px #2ecc71;
-      font-size: 2.8rem;
+      background: linear-gradient(135deg, #1e5631 0%, #27ae60 100%);
+      padding: 40px 50px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(46, 204, 113, 0.3);
+      font-size: 3rem;
       font-weight: 700;
       color: white;
       text-align: center;
-      animation: popupBounce 0.6s ease forwards;
-      letter-spacing: 2px;
+      animation: popupBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      letter-spacing: 1px;
       user-select: none;
+      max-width: 85vw;
+      word-wrap: break-word;
     }
 
     @keyframes popupBounce {
-      0% {
-        transform: scale(0.7);
-        opacity: 0;
-        text-shadow: none;
-      }
-      50% {
-        transform: scale(1.15);
-        opacity: 1;
-        text-shadow: 0 0 10px #a5f3a5, 0 0 20px #a5f3a5;
-      }
-      100% {
-        transform: scale(1);
-        text-shadow: 0 0 15px #2ecc71, 0 0 30px #27ae60;
-      }
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
-    /* Member table styles */
     .member-table-container {
-      margin-top: 40px;
+      margin-top: 35px;
       width: 100%;
-      max-width: 600px;
       overflow-x: auto;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
     }
 
     .member-table {
       width: 100%;
       border-collapse: collapse;
-      background-color: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      overflow: hidden;
     }
 
     .member-table th, .member-table td {
-      padding: 12px;
-      text-align: center;
+      padding: 16px;
+      text-align: left;
       color: #fff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid var(--glass-border);
     }
 
     .member-table th {
-      background-color: #145214;
-      font-size: 1.1rem;
+      background-color: rgba(0, 0, 0, 0.3);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #a5f3a5;
+    }
+
+    .member-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .member-table tr:hover {
+      background-color: rgba(255, 255, 255, 0.03);
     }
 
     .name-input {
       width: 100%;
-      padding: 8px;
-      border: none;
-      border-radius: 5px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 8px;
       outline: none;
       font-size: 1rem;
+      background-color: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    .name-input:focus {
       background-color: rgba(255, 255, 255, 0.15);
-      color: #e6ffe6;
+      border-color: rgba(46, 204, 113, 0.4);
     }
 
     .status-toggle {
-      padding: 8px 14px;
+      padding: 8px 16px;
       border: none;
       border-radius: 20px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
-      background-color: #c0392b;
+      background-color: var(--danger-red);
       color: white;
-      transition: background-color 0.3s ease;
+      transition: all 0.2s ease;
       user-select: none;
+      display: inline-block;
+      width: 100px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
+    }
+
+    .status-toggle:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
     }
 
     .status-toggle.received {
-      background-color: #2ecc71;
+      background-color: var(--accent-green);
+      box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
     }
 
     @media (max-width: 480px) {
-      #namesInput {
-        width: 90vw;
-        height: 150px;
-      }
-
-      #popupContent {
-        font-size: 2rem;
-        padding: 30px 40px;
-      }
-
-      .name-input {
-        font-size: 0.9rem;
-      }
-
-      .status-toggle {
-        font-size: 0.85rem;
-        padding: 6px 12px;
-      }
+      body { padding: 20px 15px; }
+      h1 { font-size: 2.1rem; }
+      #popupContent { font-size: 2rem; padding: 30px 25px; }
+      .member-table th, .member-table td { padding: 12px 10px; }
+      .status-toggle { width: 85px; padding: 6px 10px; font-size: 0.8rem; }
     }
   </style>
 </head>
 <body>
 
-<h1>5K Savings Group</h1>
+<div class="container">
+  <h1>5K Savings Group</h1>
+  <div class="counter-banner" id="counterText">0 / 12 seats completed successfully</div>
 
-<textarea id="namesInput" placeholder="Enter 1 or more names, each on a new line..."></textarea>
+  <textarea id="namesInput" placeholder="Enter 1 or more names, each on a new line..."></textarea>
+  <button id="pickBtn">Pick a Random Name</button>
 
-<button id="pickBtn">Pick a Random Name</button>
+  <div id="popup">
+    <div id="popupContent"></div>
+  </div>
 
-<div id="popup">
-  <div id="popupContent"></div>
-</div>
-<h2 style="color: #a5f3a5; margin-bottom: 12px; text-align: center; font-weight: 600;">
-      0 seats completed successfully
-  </h2>
-<!-- Member List Table -->
-<div class="member-table-container">
-  <table class="member-table" aria-label="Member list with name and status">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody id="memberRows">
-      <!-- Rows inserted by JS -->
-    </tbody>
-  </table>
+  <div class="member-table-container">
+    <table class="member-table" aria-label="Member list with name and status">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th style="width: 120px; text-align: center;">Status</th>
+        </tr>
+      </thead>
+      <tbody id="memberRows">
+        </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
@@ -226,38 +287,29 @@
   const popup = document.getElementById('popup');
   const popupContent = document.getElementById('popupContent');
   const memberRows = document.getElementById('memberRows');
+  const counterText = document.getElementById('counterText');
 
-  // Fixed 10 names for the table (independent from textarea)
+  // Fixed names for the table with proper formatting and commas resolved
   const fixedNames = [
     'Bala',
     'Manikandan',
     'Chinamaruthu',
-    'Mathi'
+    'Mathi',
     'Vinothkumar',
     'Gokul',
     'Bala murugan',
     'Maruthu /Bala murugan',
     'Pragatheeshwaran',
     'Mahesh',
-    'Govindhan'
+    'Govindhan',
     'Karthiyaraj M'
   ];
 
-  // Set initial status for each person ('pending' or 'received')
-  const initialStatuses = [
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-    'pending',
-  ];
+  // Map initial statuses matching the total count array size
+  const initialStatuses = Array(fixedNames.length).fill('pending');
+
+  // Sync fixed names array directly into the picker input area on load
+  namesInput.value = fixedNames.join('\n');
 
   function getNames() {
     return namesInput.value
@@ -283,8 +335,8 @@
   async function animatePick(names, finalName) {
     return new Promise(resolve => {
       let count = 0;
-      const totalCycles = 30;
-      const interval = 50;
+      const totalCycles = 25;
+      const interval = 60;
 
       const intervalId = setInterval(() => {
         const fakeName = names[Math.floor(Math.random() * names.length)];
@@ -301,16 +353,16 @@
   pickBtn.addEventListener('click', async () => {
     const names = getNames();
     if (names.length === 0) {
-      alert('Please enter at least one name in the box above.');
+      alert('Please enter at least one name in the box.');
       return;
     }
 
-    const finalName = getRandomName(names);
     pickBtn.disabled = true;
     showPopup('Picking...');
+    const finalName = getRandomName(names);
     const result = await animatePick(names, finalName);
+    
     popupContent.textContent = result;
-    popupContent.style.animation = 'popupBounce 0.6s ease forwards';
     pickBtn.disabled = false;
   });
 
@@ -320,24 +372,32 @@
     }
   });
 
-  // Populate table with fixed names and initial statuses
-  function populateTable() {
-    memberRows.innerHTML = ''; // clear previous rows
+  // Calculate and update the seats counter text
+  function updateCounter() {
+    const total = fixedNames.length;
+    const completed = document.querySelectorAll('.status-toggle.received').length;
+    counterText.textContent = `${completed} / ${total} seats completed successfully`;
+  }
 
-    for(let i = 0; i < 10; i++) {
+  // Populate dynamic dashboard elements
+  function populateTable() {
+    memberRows.innerHTML = ''; 
+
+    fixedNames.forEach((name, i) => {
       const tr = document.createElement('tr');
 
-      // Name cell with editable input
+      // Name display cell
       const nameTd = document.createElement('td');
-      const nameInput = document.createElement('input');
-      nameInput.type = 'text';
-      nameInput.classList.add('name-input');
-      nameInput.value = fixedNames[i];
-      nameTd.appendChild(nameInput);
+      const nameInputField = document.createElement('input');
+      nameInputField.type = 'text';
+      nameInputField.classList.add('name-input');
+      nameInputField.value = name;
+      nameTd.appendChild(nameInputField);
       tr.appendChild(nameTd);
 
-      // Status cell with toggle button
+      // Interactive Action Toggles
       const statusTd = document.createElement('td');
+      statusTd.style.textAlign = 'center';
       const toggleBtn = document.createElement('button');
       toggleBtn.classList.add('status-toggle');
 
@@ -361,16 +421,18 @@
           toggleBtn.textContent = 'Pending';
           toggleBtn.classList.remove('received');
         }
+        updateCounter();
       });
 
       statusTd.appendChild(toggleBtn);
       tr.appendChild(statusTd);
-
       memberRows.appendChild(tr);
-    }
+    });
+    
+    updateCounter();
   }
 
-  // Initial load
+  // Initial Execution
   populateTable();
 </script>
 
